@@ -18,7 +18,7 @@ public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
 
     public Robot() {
-        // Sets up logging.
+        // Sets up logging
         switch(RobotConstants.getInstance().kMode) {
             case REAL:
                 Logger.addDataReceiver(new WPILOGWriter());
