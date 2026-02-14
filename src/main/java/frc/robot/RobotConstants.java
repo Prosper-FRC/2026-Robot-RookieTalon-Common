@@ -2,9 +2,16 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
+import frc.robot.Subsystems.Drive.Drive;
+import frc.robot.Subsystems.Drive.DriveConstants.DriveConstants;
+import frc.robot.Subsystems.Drive.DriveConstants.DriveConstants9999;
+import frc.robot.Subsystems.Drive.DriveConstants.DriveConstantsSim;
 
 public class RobotConstants {
     private static RobotConstants instance = null;
+
+    // MAKE THIS FALSE BEFORE SCRIMMAGES
+    public static final boolean kTuningMode = true;
 
     public static enum mode {
         REAL,
@@ -12,13 +19,12 @@ public class RobotConstants {
         SIM
     };
 
-    // Declare and Assign general constants here
     public final int kTeamNumber;
     public final mode kMode;
     public final int kDriveControllerPort = 0;
     public final double kTimestep = 0.02d;
 
-    // Declare team specific constants here
+    private final DriveConstants kDriveConstants;
 
     private RobotConstants() {
         kTeamNumber = RobotController.getTeamNumber();
@@ -32,18 +38,22 @@ public class RobotConstants {
 
         switch (kTeamNumber) {
             case 9999:
-                // Assign team specific constants
+                kDriveConstants = new DriveConstants9999();
                 break;
             case 0:
-                // Assign sim constants
+                kDriveConstants = new DriveConstantsSim();
                 break;
             default:
+                kDriveConstants = new DriveConstants();
                 break;
         }
     }
 
+    public static DriveConstants DriveConstants() {
+        return instance.kDriveConstants;
+    }
+
     public static RobotConstants getInstance() {
-        // Using a null check so that the instance is created at the proper time
         if (instance == null) {
             instance = new RobotConstants();
         }
