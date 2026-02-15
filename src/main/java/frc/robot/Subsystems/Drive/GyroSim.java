@@ -16,6 +16,6 @@ public class GyroSim implements GyroIO {
 
     @Override
     public void updateGyro(double yaw) {
-        yaw += yaw;
+        this.yaw += yaw;
     }
 }

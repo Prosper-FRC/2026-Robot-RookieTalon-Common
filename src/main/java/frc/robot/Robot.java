@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
+    
+    private RobotContainer mRobotContainer;
 
     public Robot() {
         // Sets up logging
@@ -39,7 +41,7 @@ public class Robot extends LoggedRobot {
 
         Logger.start();
 
-        new RobotContainer();
+        mRobotContainer = new RobotContainer();
     }
 
     @Override

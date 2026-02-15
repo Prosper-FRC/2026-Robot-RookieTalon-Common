@@ -59,7 +59,6 @@ public class Drive extends SubsystemBase {
     private final SwerveDriveKinematics kKinematics;
     private final SwerveDriveOdometry kOdometry;
 
-    private Rotation2d robotRotation;
     private SwerveDrivePoseEstimator poseEstimator;
 
     @AutoLogOutput(key = "Drive/Swerve/Speeds")
@@ -90,8 +89,6 @@ public class Drive extends SubsystemBase {
         kGyro = gyro;
         //kVision = vision;
 
-        robotRotation = new Rotation2d(Units.rotationsToRadians(kGyroInputs.yawRotations));
-
         kKinematics = new SwerveDriveKinematics(
             RobotConstants.DriveConstants().kFRModuleOffsets.translationalOffset(),
             RobotConstants.DriveConstants().kFLModuleOffsets.translationalOffset(),
@@ -100,12 +97,12 @@ public class Drive extends SubsystemBase {
         );
 
         kOdometry = new SwerveDriveOdometry(kKinematics, 
-            getRobotRotation(), 
+            new Rotation2d(0.0d), 
             getModulePositions()
         );
         odometryPose = kOdometry.getPoseMeters();
 
-        poseEstimator = new SwerveDrivePoseEstimator(kKinematics, getRobotRotation(), getModulePositions(), new Pose2d());
+        poseEstimator = new SwerveDrivePoseEstimator(kKinematics, new Rotation2d(0.0d), getModulePositions(), new Pose2d());
 
         for(int i = 0; i < kModules.length; ++i) {
             kModules[i].recalibrateAzimuth();
@@ -213,12 +210,6 @@ public class Drive extends SubsystemBase {
         Logger.processInputs("Drive/ModuleBL", kModuleInputs[3]);
         Logger.processInputs("Drive/Gyro", kGyroInputs);
 
-        // Gyro
-        if (kGyroInputs.isOk) {
-            robotRotation = new Rotation2d(Units.rotationsToRadians(kGyroInputs.yawRotations));
-        }
-        Logger.processInputs("Drive/Gyro", kGyroInputs);
-
         // Vision
         /*
         kVision.periodic(poseEstimator.getEstimatedPosition(), kOdometry.getPoseMeters());
@@ -235,8 +226,8 @@ public class Drive extends SubsystemBase {
         */
 
         // Update Odometry.
-        poseEstimator.update(robotRotation, getModulePositions());
-        odometryPose = kOdometry.update(robotRotation, getModulePositions());
+        poseEstimator.update(getRobotRotation(), getModulePositions());
+        odometryPose = kOdometry.update(getRobotRotation(), getModulePositions());
 
         // Internal State Handling.
         switch(state) {
@@ -261,8 +252,7 @@ public class Drive extends SubsystemBase {
             new SwerveModuleState(rotationsToMeters(kModuleInputs[2].driveVelocityRPS), Rotation2d.fromRotations(kModuleInputs[2].azimuthPositionRotations)),
             new SwerveModuleState(rotationsToMeters(kModuleInputs[3].driveVelocityRPS), Rotation2d.fromRotations(kModuleInputs[3].azimuthPositionRotations))
         };
-
-        // Update the gyro (usually for sim purposes)
+        // Update the gyro (for sim purposes)
         if(RobotConstants.getInstance().kMode == RobotConstants.mode.SIM) {
             kGyro.updateGyro(Units.radiansToRotations(kKinematics.toChassisSpeeds(realStates).omegaRadiansPerSecond * RobotConstants.getInstance().kTimestep));
         }
@@ -291,10 +281,10 @@ public class Drive extends SubsystemBase {
 
     public void resetGyro() {
         /* Robot is usually facing the other way(relative to field) when doing cycles on red side, so gyro is reset to 180 */
-        robotRotation = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red) ? 
+        Rotation2d resetRotation = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red) ? 
             Rotation2d.fromDegrees(180.0) : Rotation2d.fromDegrees(0.0);
-        kGyro.resetGyro(robotRotation);
-        setPose(new Pose2d(getPoseEstimate().getTranslation(), robotRotation));
+        kGyro.resetGyro(resetRotation);
+        setPose(new Pose2d(getPoseEstimate().getTranslation(), resetRotation));
     }
 
     public void setPose(Pose2d pose) {
@@ -302,8 +292,7 @@ public class Drive extends SubsystemBase {
     }
 
     public void setPoses(Pose2d estimatorPose, Pose2d odometryPose) {
-        robotRotation = estimatorPose.getRotation();
-        kGyro.resetGyro(robotRotation);
+        kGyro.resetGyro(estimatorPose.getRotation());
         // Safe to pass in odometry poses because of the syncing
         // between gyro and pose estimator in reset gyro function
         poseEstimator.resetPosition(getRobotRotation(), getModulePositions(), estimatorPose);
@@ -317,6 +306,6 @@ public class Drive extends SubsystemBase {
 
     @AutoLogOutput(key = "Drive/Odometry/RobotRotation")
     public Rotation2d getRobotRotation() {
-        return robotRotation;
+        return new Rotation2d(Units.rotationsToRadians(kGyroInputs.yawRotations));
     }
 }
