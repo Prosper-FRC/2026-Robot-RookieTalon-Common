@@ -45,7 +45,7 @@ public class CameraIOPhotonVision implements CameraIO {
         this.photonCamera = new PhotonCamera(cameraName);
         PhotonCamera.setVersionCheckEnabled(false);
 
-        poseEstimator = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark), cameraTransform);
+        poseEstimator = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark), cameraTransform);
         //
 
         if (RobotConstants.getInstance().kMode == mode.SIM) {
