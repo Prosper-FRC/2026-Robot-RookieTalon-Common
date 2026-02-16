@@ -27,8 +27,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotConstants;
 import frc.robot.Subsystems.Drive.Controllers.TeleopController;
-// import frc.robot.Subsystems.Vision.Vision;
-// import frc.robot.Subsystems.Vision.Vision.VisionObservation;
+import frc.robot.Subsystems.Vision.Vision;
+import frc.robot.Subsystems.Vision.Vision.VisionObservation;
 
 public class Drive extends SubsystemBase {
     public enum driveState {
@@ -43,7 +43,7 @@ public class Drive extends SubsystemBase {
     // Create IO layers
     private final ModuleIO[] kModules;
     private final GyroIO kGyro;
-    // private final Vision kVision;
+    private final Vision kVision;
 
     // Create inputs
     private final moduleInputsAutoLogged[] kModuleInputs = new moduleInputsAutoLogged[] {
@@ -79,7 +79,7 @@ public class Drive extends SubsystemBase {
     // For SysId
     private final SysIdRoutine kRoutine;
 
-    public Drive(ModuleIO moduleFR, ModuleIO moduleFL, ModuleIO moduleBR, ModuleIO moduleBL, GyroIO gyro) { // Vision vision) {
+    public Drive(ModuleIO moduleFR, ModuleIO moduleFL, ModuleIO moduleBR, ModuleIO moduleBL, GyroIO gyro, Vision vision) {
         kModules = new ModuleIO[] {
             moduleFR,
             moduleFL,
@@ -87,7 +87,7 @@ public class Drive extends SubsystemBase {
             moduleBL
         };
         kGyro = gyro;
-        //kVision = vision;
+        kVision = vision;
 
         kKinematics = new SwerveDriveKinematics(
             RobotConstants.DriveConstants().kFRModuleOffsets.translationalOffset(),
@@ -211,7 +211,6 @@ public class Drive extends SubsystemBase {
         Logger.processInputs("Drive/Gyro", kGyroInputs);
 
         // Vision
-        /*
         kVision.periodic(poseEstimator.getEstimatedPosition(), kOdometry.getPoseMeters());
         VisionObservation[] observations = kVision.getVisionObservations();
         for(VisionObservation observation : observations) {
@@ -223,7 +222,6 @@ public class Drive extends SubsystemBase {
             Logger.recordOutput(observation.camName()+"/stdDevTheta", observation.stdDevs().get(2));
             // Logger.recordOutput(observation.camName()+"/TransformFromOdometry", odometry.getPoseMeters().minus(observation.pose()));
         }
-        */
 
         // Update Odometry.
         poseEstimator.update(getRobotRotation(), getModulePositions());
@@ -260,8 +258,12 @@ public class Drive extends SubsystemBase {
 
     /******** STATE UPDATES ********/
     private void stateUpdateTeleop() {
+        Rotation2d robotAngle = new Rotation2d(Units.rotationsToRadians(kGyroInputs.yawRotations));
+        if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) 
+            robotAngle = robotAngle.plus(Rotation2d.k180deg);
+
         // Discretized robot framed chassis speeds.
-        ChassisSpeeds robotRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(desiredSpeeds, new Rotation2d(Units.rotationsToRadians(kGyroInputs.yawRotations)));
+        ChassisSpeeds robotRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(desiredSpeeds, robotAngle);
         ChassisSpeeds discretizedSpeeds = ChassisSpeeds.discretize(robotRelativeSpeeds, RobotConstants.getInstance().kTimestep);
 
         // Perform IK to get each indiviual module's goal setpoint and then desaturate to cap the speed.
@@ -301,7 +303,7 @@ public class Drive extends SubsystemBase {
 
     @AutoLogOutput(key = "Drive/Odometry/PoseEstimate")
     public Pose2d getPoseEstimate() {
-        return (RobotBase.isReal()) ? poseEstimator.getEstimatedPosition() : odometryPose;
+        return poseEstimator.getEstimatedPosition();
     }
 
     @AutoLogOutput(key = "Drive/Odometry/RobotRotation")

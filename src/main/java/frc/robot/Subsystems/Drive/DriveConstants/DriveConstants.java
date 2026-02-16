@@ -26,7 +26,7 @@ public class DriveConstants {
     public int kGyroID = 10;
 
     public moduleHardLimits kModuleHardLimits = new moduleHardLimits(0.0508d, 6.12d/1.0d, 150.0d/7.0d, 3.0d);
-    public moduleSoftlimits kModuleSoftLimits = new moduleSoftlimits(new moduleControllerLimits(0.05d, 2, 6.0d), 2.0d, 4.0d, 0.25d, true, true);
+    public moduleSoftlimits kModuleSoftLimits = new moduleSoftlimits(new moduleControllerLimits(0.05d, 2, 6.0d), 4.5d, 12.0d, Math.toRadians(360), true, true);
 
     public double sniperModeScalar = 0.2d;
 

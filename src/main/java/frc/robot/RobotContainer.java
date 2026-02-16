@@ -13,11 +13,11 @@ import frc.robot.Subsystems.Drive.GyroPigeon2;
 import frc.robot.Subsystems.Drive.GyroSim;
 import frc.robot.Subsystems.Drive.ModuleSim;
 import frc.robot.Subsystems.Drive.ModuleTalonFX;
-// import frc.robot.Subsystems.Vision.CameraIO;
-// import frc.robot.Subsystems.Vision.CameraIOPhotonVision;
-// import frc.robot.Subsystems.Vision.Vision;
-// import frc.robot.Subsystems.Vision.VisionConstants;
-// import frc.robot.Subsystems.Vision.VisionConstants.Orientation;
+import frc.robot.Subsystems.Vision.CameraIO;
+import frc.robot.Subsystems.Vision.CameraIOPhotonVision;
+import frc.robot.Subsystems.Vision.Vision;
+import frc.robot.Subsystems.Vision.VisionConstants;
+import frc.robot.Subsystems.Vision.VisionConstants.Orientation;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -37,11 +37,11 @@ public class RobotContainer {
                     new ModuleTalonFX(RobotConstants.DriveConstants().kFLModuleIDs, RobotConstants.DriveConstants().kFLModuleOffsets, RobotConstants.DriveConstants().kModuleGains, "drivebase"),
                     new ModuleTalonFX(RobotConstants.DriveConstants().kBRModuleIDs, RobotConstants.DriveConstants().kBRModuleOffsets, RobotConstants.DriveConstants().kModuleGains, "drivebase"),
                     new ModuleTalonFX(RobotConstants.DriveConstants().kBLModuleIDs, RobotConstants.DriveConstants().kBLModuleOffsets, RobotConstants.DriveConstants().kModuleGains, "drivebase"),
-                    new GyroPigeon2(RobotConstants.DriveConstants().kGyroID, RobotConstants.DriveConstants().kGyroOffsets, "drivebase")
-					// new Vision(new CameraIO[] {
-					// 	new CameraIOPhotonVision(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform, Orientation.FRONT), 
-                    // 	new CameraIOPhotonVision(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform, Orientation.FRONT)
-					// })
+                    new GyroPigeon2(RobotConstants.DriveConstants().kGyroID, RobotConstants.DriveConstants().kGyroOffsets, "drivebase"),
+					new Vision(new CameraIO[] {
+					 	new CameraIOPhotonVision(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform, Orientation.FRONT), 
+                     	new CameraIOPhotonVision(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform, Orientation.FRONT)
+					})
                 );
                 break;
             case REPLAY:
@@ -52,11 +52,11 @@ public class RobotContainer {
                     new ModuleSim(), 
                     new ModuleSim(), 
                     new ModuleSim(), 
-                    new GyroSim()
-					// new Vision(new CameraIO[] {
-					// 	new CameraIOPhotonVision(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform, Orientation.FRONT), 
-                    // 	new CameraIOPhotonVision(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform, Orientation.FRONT)
-					// })
+                    new GyroSim(),
+					new Vision(new CameraIO[] {
+					 	new CameraIOPhotonVision(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform, Orientation.FRONT), 
+                    	new CameraIOPhotonVision(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform, Orientation.FRONT)
+					})
                 );
                 break;
             default:
@@ -71,7 +71,7 @@ public class RobotContainer {
 
         kDrive.setDefaultCommand(new InstantCommand(() -> kDrive.setDriveState(Drive.driveState.TELEOP), kDrive));
 
-        kDrive.supplyControllerInputs(() -> kDriveController.getLeftX(), () -> kDriveController.getLeftY(), () -> kDriveController.getRightX());
+        kDrive.supplyControllerInputs(() -> kDriveController.getLeftX(), () -> kDriveController.getLeftY(), () -> -kDriveController.getRightX());
     
         kDriveController.a().debounce(0.25d, DebounceType.kRising)
             .onTrue(new InstantCommand(() -> kDrive.setDriveState(Drive.driveState.SYSID)).andThen(kDrive.getSysIdCommand()))
