@@ -2,6 +2,8 @@ package frc.robot.Subsystems.Shooter;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public interface HooderIO {
     @AutoLog
     static class HooderInputs {
@@ -16,9 +18,9 @@ public interface HooderIO {
 
     default public void updateInputs(HooderInputs toUpdate) {} 
 
-    default public void setHooderPositionRotations() {}
+    default public void setHooderPositionRotations(Rotation2d newHoodPosition) {}
 
-    default public void setHooderVoltage() {}
+    default public void setHooderVoltage(double volts) {}
 
     default public void stopHooder() {}
 
