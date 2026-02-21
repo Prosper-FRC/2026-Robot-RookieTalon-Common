@@ -9,7 +9,7 @@ public interface ShooterIO {
     static class ShooterInputs {
         public boolean indexerOk = false;
         public double indexerPositionRotations = 0.0d;
-        public double indexerVelocityRPS = 0.0d;
+        public double indexerVelocityRPM = 0.0d;
         public double indexerTemperatureCelcius = 0.0d;
         public double indexerVoltage = 0.0d;
         public double indexerStatorCurrent = 0.0d;
@@ -17,7 +17,7 @@ public interface ShooterIO {
 
         public boolean flywheelOk = false;
         public double flywheelPositionRotations = 0.0d;
-        public double flywheelVelocityRPS = 0.0d;
+        public double flywheelVelocityRPM = 0.0d;
         public double flywheelTemperatureCelcius = 0.0d;
         public double flywheelVoltage = 0.0d;
         public double flywheelStatorCurrent = 0.0d;
@@ -25,7 +25,7 @@ public interface ShooterIO {
 
         public boolean hooderOk = false;
         public double hooderPositionRotations = 0.0d;
-        public double hooderVelocityRPS = 0.0d;
+        public double hooderVelocityRPM = 0.0d;
         public double hooderTemperatureCelcius = 0.0d;;
         public double hooderVoltage = 0.0d;
         public double hooderStatorCurrent = 0.0d;
