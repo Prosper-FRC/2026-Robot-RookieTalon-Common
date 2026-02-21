@@ -1,21 +1,64 @@
-package frc.robot.SubSystems.Intake;
+package frc.robot.Subsystems.Intake;
 
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
-
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.utils.debugging.LoggedTunableNumber;
-import frc.robot.utils.visualizers.PivotVisualizer;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Intake {
-    
+public class Intake extends SubsystemBase {
+
+  private final IntakeIO rollerIO;
+  private final PivotIO pivotIO;
+
+private final IntakeIO.IntakeInputs rollerInputs =
+    new IntakeIO.IntakeInputs();
+
+private final PivotIO.PivotIOInputs pivotInputs =
+    new PivotIO.PivotIOInputs();
+
+  public Intake(IntakeIO rollerIO, PivotIO pivotIO) {
+    this.rollerIO = rollerIO;
+    this.pivotIO = pivotIO;
+  }
+
+  @Override
+  public void periodic() {
+    rollerIO.updateInputs(rollerInputs);
+    pivotIO.updateInputs(pivotInputs);
+
+    Logger.recordOutput("Intake/Roller/Velocity", rollerInputs.velocityRPS);
+    Logger.recordOutput("Intake/Pivot/Angle",
+    pivotInputs.position.getDegrees());
+  }
+
+  /* ================= ROLLER ================= */
+
+  public void intake() {
+    rollerIO.setVoltage(10);
+  }
+
+  public void outtake() {
+    rollerIO.setVoltage(0);
+  }
+
+  public void stopRoller() {
+    rollerIO.stop();
+  }
+
+  /* ================= PIVOT ================= */
+
+  public void movePivotTo(Rotation2d position) {
+    pivotIO.setPosition(position);
+  }
+
+  public void stopPivot() {
+    pivotIO.stop();
+  }
+
+  public boolean atPivotPosition(Rotation2d target) {
+    return Math.abs(
+        pivotInputs.position.minus(target)
+            .getDegrees())
+        < IntakeConstants.kPivotTolerance
+            .getDegrees();
+  }
 }

@@ -12,13 +12,11 @@ public class RobotConstants {
         SIM
     };
 
-    // Declare and Assign general constants here
     public final int kTeamNumber;
     public final mode kMode;
     public final int kDriveControllerPort = 0;
     public final double kTimestep = 0.02d;
 
-    // Declare team specific constants here
 
     private RobotConstants() {
         kTeamNumber = RobotController.getTeamNumber();
@@ -32,10 +30,10 @@ public class RobotConstants {
 
         switch (kTeamNumber) {
             case 9999:
-                // Assign team specific constants
+        
                 break;
             case 0:
-                // Assign sim constants
+           
                 break;
             default:
                 break;

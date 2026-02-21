@@ -1,4 +1,4 @@
-package frc.robot.SubSystems.Intake;
+package frc.robot.Subsystems.Intake;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -13,8 +13,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.SubSystems.Intake.IntakeConstants.IntakeHardware;
-import frc.robot.SubSystems.Intake.IntakeConstants.IntakeMotorConfiguration;
+
 
 public class IntakeIOSparkMax {
 
