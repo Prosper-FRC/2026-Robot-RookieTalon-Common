@@ -4,18 +4,73 @@
 
 package frc.robot;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
- */
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Subsystems.Shooter.Shooter;
+import frc.robot.Subsystems.Shooter.ShooterIOSim;
+import frc.robot.Subsystems.Shooter.ShooterConstants;
+
 public class RobotContainer {
+  public final CommandXboxController kDriveController = new CommandXboxController(RobotConstants.getInstance().kDriveControllerPort);
+  public Shooter kShooter;
 
   public RobotContainer() {
-    // Configure the trigger bindings
-    configureBindings();
-  }
+    	switch (RobotConstants.getInstance().kMode) {
+          case REAL:
+                //STUFF
+                break;
+            case REPLAY:
+                break;
+            case SIM:
+                kShooter = new Shooter(new ShooterIOSim());
+                break;
+            default:
+                break;
+        }
 
-  private void configureBindings() {}
+    	configureBindings();
+  	}
+
+	private void configureBindings() {
+
+        DriverStation.silenceJoystickConnectionWarning(true);
+
+        //bind one button for shooting, one button for hood position
+
+		
+        kDriveController.rightBumper().whileTrue(
+            Commands.run(() -> kShooter.setFlywheelVelocity(3000), kShooter)
+        ).onFalse(
+            Commands.runOnce(kShooter::stopFlywheel, kShooter)
+        );
+
+        
+        kDriveController.a().onTrue(
+            Commands.runOnce(() -> kShooter.setHooderPositionRotations(ShooterConstants.kHoodPosition1), kShooter)
+        );
+
+        
+        kDriveController.b().onTrue(
+            Commands.runOnce(() -> kShooter.setHooderPositionRotations(ShooterConstants.kHoodPosition2), kShooter)
+        );
+
+        kDriveController.x().onTrue(
+            Commands.runOnce(() -> kShooter.setHooderPositionRotations(ShooterConstants.kHoodPosition3), kShooter)
+        );
+
+     
+        kDriveController.start().onTrue(
+            Commands.runOnce(() -> {
+                kShooter.stopFlywheel();
+                kShooter.stopHooder();
+            }, kShooter)
+        );
+    }
+
+    public Command getAutonomousCommand() {
+        return Commands.print("No autonomous command configured");
+    }
+
 }

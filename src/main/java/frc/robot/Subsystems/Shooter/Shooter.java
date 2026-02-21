@@ -6,83 +6,71 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-    private final IndexerIO kIndexer;
-    private final IndexerInputsAutoLogged kIndexerInputs = new IndexerInputsAutoLogged();
+    private final ShooterIO kShooter;
+    private final ShooterInputsAutoLogged kShooterInputs;
 
-    private final FlywheelIO kFlywheel;
-    private final FlywheelInputsAutoLogged kFlywheelInputs = new FlywheelInputsAutoLogged();
-
-    private final HooderIO kHooder;
-    private final HooderInputsAutoLogged kHooderInputs = new HooderInputsAutoLogged();
-    
-    public Shooter(IndexerIO indexerIO, FlywheelIO flywheelIO, HooderIO hooderIO) {
-        kIndexer = indexerIO;
-        kFlywheel = flywheelIO;
-        kHooder = hooderIO;
+    public Shooter(ShooterIO shooterIO) {
+        kShooter = shooterIO;
+        kShooterInputs = new ShooterInputsAutoLogged();
     }
 
     @Override
     public void periodic() {
-        kIndexer.updateInputs(kIndexerInputs);
-        kFlywheel.updateInputs(kFlywheelInputs);
-        kHooder.updateInputs(kHooderInputs);
+        kShooter.updateInputs(kShooterInputs);
 
-        Logger.processInputs("Indexer", kIndexerInputs);
-        Logger.processInputs("Flywheel", kFlywheelInputs);
-        Logger.processInputs("Hooder", kHooderInputs);
+        Logger.processInputs("Shooter", kShooterInputs);
     }
 
     /* FLYWHEEL */
-    
-    public void setFlywheelVoltageFlywheel(double volts) {
-        kFlywheel.setFlywheelVoltage(volts);
+    public void setFlywheelVoltage(double volts) {
+        kShooter.setFlywheelVoltage(volts);
     }
 
     public void setFlywheelVelocity(double velocity) {
-        kFlywheel.setFlywheelVelocity(velocity);
-    }
-    
-    public void stopFlywheel() {
-        kFlywheel.stopFlywheel();
+        kShooter.setFlywheelVelocity(velocity);
     }
 
-     public void resetFlywheel() {
-        kFlywheel.resetFlywheel();
+    public void stopFlywheel() {
+        kShooter.stopFlywheel();
+    }
+
+    public void resetFlywheel() {
+        kShooter.resetFlywheel();
     }
 
     /* HOOD */
 
     public void setHooderVoltage(double volts) {
-        kHooder.setHooderVoltage(volts);
+        kShooter.setHooderVoltage(volts);
     }
     
     public void setHooderPositionRotations(Rotation2d newHoodPosition) {
-        kHooder.setHooderPositionRotations(newHoodPosition);
+        kShooter.setHooderPositionRotations(newHoodPosition);
     }
 
     public void stopHooder() {
-        kHooder.stopHooder();
+        kShooter.stopHooder();
     }
     
     public void resetHooder() {
-        kHooder.resetHooder();
+        kShooter.resetHooder();
     }
 
     /* INDEXER */
     
     public void setIndexerVoltage(double volts) {
-        kIndexer.setIndexerVoltage(volts);
+        kShooter.setIndexerVoltage(volts);
     }
 
-    public void sIndexertopIndexer() {
-        kIndexer.stopIndexer();
+    public void setIndexerVelocity(double velocity) {
+        kShooter.setIndexerVelocity(velocity);
     }
 
-    public void sIndexeretIndexerVelocity(double velocity) {
-        kIndexer.setIndexerVelocity(velocity);
+    public void stopIndexer() {
+        kShooter.stopIndexer();
     }
 
-     public void resetIndexer() {
-        kIndexer.resetIndexer();
+    public void resetIndexer() {
+        kShooter.resetIndexer();
     }
 }
