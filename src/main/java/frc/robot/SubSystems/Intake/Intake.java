@@ -30,7 +30,7 @@ private final PivotIO.PivotIOInputs pivotInputs =
     pivotInputs.position.getDegrees());
   }
 
-  /* ================= ROLLER ================= */
+
 
   public void intake() {
     rollerIO.setVoltage(10);
@@ -44,7 +44,12 @@ private final PivotIO.PivotIOInputs pivotInputs =
     rollerIO.stop();
   }
 
-  /* ================= PIVOT ================= */
+  public void setIntakePercent(double percent) {
+  // If your IO has setVoltage:
+  rollerIO.setVoltage(percent * 12.0);
+}
+
+
 
   public void movePivotTo(Rotation2d position) {
     pivotIO.setPosition(position);
