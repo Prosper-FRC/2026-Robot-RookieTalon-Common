@@ -24,7 +24,7 @@ public interface ShooterIO {
         public double flywheelSupplyCurrent = 0.0d;
 
         public boolean hooderOk = false;
-        public double hooderPositionRotations = 0.0d;
+        public double hooderAngleRads = 0.0d;
         public double hooderVelocityRPM = 0.0d;
         public double hooderTemperatureCelcius = 0.0d;;
         public double hooderVoltage = 0.0d;

@@ -51,7 +51,6 @@ public class RobotContainer {
             Commands.runOnce(() -> kShooter.setHooderPositionRotations(ShooterConstants.kHoodPosition1), kShooter)
         );
 
-        
         kDriveController.b().onTrue(
             Commands.runOnce(() -> kShooter.setHooderPositionRotations(ShooterConstants.kHoodPosition2), kShooter)
         );
@@ -59,7 +58,6 @@ public class RobotContainer {
         kDriveController.x().onTrue(
             Commands.runOnce(() -> kShooter.setHooderPositionRotations(ShooterConstants.kHoodPosition3), kShooter)
         );
-
      
         kDriveController.start().onTrue(
             Commands.runOnce(() -> {

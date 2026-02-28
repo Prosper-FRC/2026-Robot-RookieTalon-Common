@@ -1,20 +1,25 @@
 package frc.robot.Subsystems.Shooter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import frc.robot.RobotConstants;
 
 public class ShooterConstants{
     public static ShooterConstants instance = null;
     public final int kTeamNumber = RobotConstants.getInstance().kTeamNumber;
 
-    //Flywheel ID
+    //Flywheel
     public int kFlywheelmotorId;
 
-    //Hood ID
+    //Hood
     public int kHoodMotorId;
     public int kHoodCancoderId;
+    public static double kHooderArmLengthMeters = 0.15d;
+    public static Rotation2d kHooderMaxAngleRads = new Rotation2d(Units.degreesToRadians(360.0));
 
-    //Indexer ID
+    //Indexer
     public int kIndexerMotorId;
+    public static double kIndexerMaxVelocityRPM = 10.0d;
+    public static double kIndexerMaxAccelerationRPM = 5.0d;
 
     //NEED TO CALCULATE
     public static final Rotation2d kHoodPosition1 = Rotation2d.fromRotations(0.0); //y value at ??

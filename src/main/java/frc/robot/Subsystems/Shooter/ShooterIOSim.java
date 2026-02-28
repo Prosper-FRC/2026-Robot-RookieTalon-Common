@@ -3,41 +3,51 @@ package frc.robot.Subsystems.Shooter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
 public class ShooterIOSim implements ShooterIO {
     private static final double kLoopPeriodSec = 0.02;
-    
-    private double indexerVoltage = 0.0;
-    private double indexerVelocity = 0.0;
-    private boolean indexerRunning = false;
-
-    private double hooderVoltage = 0.0;
-    private Rotation2d hooderPositionRotations = new Rotation2d(0);
 
     private final FlywheelSim kFlywheel;
+    private final DCMotorSim kIndexer;
+    private final SingleJointedArmSim kHooder;
 
     public ShooterIOSim() {
         kFlywheel = new FlywheelSim(
             LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX44Foc(1), 0.1, 0.1),
             DCMotor.getKrakenX44Foc(1)
         );
+        kIndexer = new DCMotorSim(
+            LinearSystemId.createDCMotorSystem(ShooterConstants.kIndexerMaxVelocityRPM, ShooterConstants.kIndexerMaxAccelerationRPM),
+             DCMotor.getKrakenX44Foc(1)
+        );
+        System.out.println(DCMotor.getKrakenX44Foc(1));
+        kHooder = new SingleJointedArmSim(
+            LinearSystemId.createSingleJointedArmSystem(DCMotor.getKrakenX44Foc(1), 0.1, 0.1), 
+            DCMotor.getKrakenX44Foc(1), 0.1, 
+            ShooterConstants.kHooderArmLengthMeters,
+            0.0,
+            0.1,
+            true,
+            0.0
+        );
     }
 
     @Override
     public void setIndexerVoltage(double volts) {
-        indexerVoltage = volts;
+        kIndexer.setInputVoltage(volts);
     }
 
     @Override
     public void setIndexerVelocity(double velocity) {
-        indexerVelocity = velocity;
+        kIndexer.setAngularVelocity(velocity);
     }
 
     @Override
     public void stopIndexer() {
-        indexerVoltage = 0.0;
-        indexerRunning = false;
+        kIndexer.setInputVoltage(0.0);
     }
 
     @Override
@@ -57,24 +67,28 @@ public class ShooterIOSim implements ShooterIO {
     
     @Override
     public void setHooderVoltage(double volts) {
-        hooderVoltage = volts;
+        kHooder.setInputVoltage(volts);
     }
 
     @Override
     public void setHooderPositionRotations(Rotation2d newHoodPosition) {
-        hooderPositionRotations = newHoodPosition;
+        kHooder.setState(newHoodPosition.getRadians(), kHooder.getVelocityRadPerSec());
     }
 
     @Override
     public void stopHooder() {
-        hooderVoltage = 0.0;
+        kHooder.setInputVoltage(0.0);
     }
 
     @Override
     public void updateInputs(ShooterInputs toUpdate) {
         kFlywheel.setInputVoltage((kFlywheel.getInputVoltage() > 0.0) ? 12.0 : 0.0);
+        kIndexer.setInputVoltage((kFlywheel.getInputVoltage() > 0.0) ? 12.0 : 0.0);
+        kHooder.setInputVoltage((kFlywheel.getInputVoltage() > 0.0) ? 12.0 : 0.0);
 
         kFlywheel.update(kLoopPeriodSec);
+        kIndexer.update(kLoopPeriodSec);
+        kHooder.update(kLoopPeriodSec);
 
         // Flywheel
         toUpdate.flywheelOk = true;
@@ -85,8 +99,18 @@ public class ShooterIOSim implements ShooterIO {
 
         // Indexer
         toUpdate.indexerOk = true;
+        toUpdate.indexerPositionRotations = kIndexer.getAngularPositionRotations();
+        toUpdate.indexerVelocityRPM = kIndexer.getAngularVelocityRadPerSec() * 60.0 / (2.0 * Math.PI);
+        toUpdate.indexerVoltage = (kIndexer.getInputVoltage() > 0.0) ? 12.0 : 0.0;
+        toUpdate.indexerStatorCurrent = (kIndexer.getInputVoltage() > 0.0) ? kIndexer.getCurrentDrawAmps() : 0.0;
+        toUpdate.indexerSupplyCurrent = (kIndexer.getInputVoltage() > 0.0) ? kIndexer.getCurrentDrawAmps() : 0.0;
 
         // Hooder
         toUpdate.hooderOk = true;
+        toUpdate.hooderAngleRads = kHooder.getAngleRads();
+        toUpdate.hooderVelocityRPM = kHooder.getVelocityRadPerSec() * 60.0 / (2.0 * Math.PI);
+        toUpdate.hooderVoltage = (kHooder.getInput(0) > 0.0) ? 12.0 : 0.0;
+        toUpdate.hooderStatorCurrent = (kHooder.getInput(0) > 0.0) ? kHooder.getCurrentDrawAmps() : 0.0;
+        toUpdate.hooderSupplyCurrent = (kHooder.getInput(0) > 0.0) ? kHooder.getCurrentDrawAmps() : 0.0;
     }
 }
