@@ -50,7 +50,7 @@ public interface ShooterIO {
 
     default public void resetFlywheel() {}
     
-    default public void setHooderPositionRotations(Rotation2d newHoodPosition) {}
+    default public void setHooderPositionRotationsGoal(Rotation2d newHoodPosition) {}
 
     default public void setHooderVoltage(double volts) {}
 

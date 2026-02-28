@@ -1,8 +1,14 @@
 package frc.robot.Subsystems.Shooter;
 
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -13,6 +19,11 @@ public class ShooterIOSim implements ShooterIO {
     private final FlywheelSim kFlywheel;
     private final DCMotorSim kIndexer;
     private final SingleJointedArmSim kHooder;
+
+    @AutoLogOutput(key = "Shooter/Hooder/HooderPositionRotationsGoal")
+    private double kHooderPositionRotationsGoal = 0.0;
+
+    private final ProfiledPIDController hooderPIDController;
 
     public ShooterIOSim() {
         kFlywheel = new FlywheelSim(
@@ -33,6 +44,14 @@ public class ShooterIOSim implements ShooterIO {
             true,
             0.0
         );
+
+        hooderPIDController = new ProfiledPIDController(
+            ShooterConstants.kHooderkp, 
+            ShooterConstants.kHooderki, 
+            ShooterConstants.kHooderkd, 
+            new TrapezoidProfile.Constraints(ShooterConstants.kHooderMaxVelocityRadPerS, ShooterConstants.kHooderMaxAccelerationRadPerS2)
+        );
+        hooderPIDController.enableContinuousInput(0.0, 12.0);
     }
 
     @Override
@@ -71,8 +90,9 @@ public class ShooterIOSim implements ShooterIO {
     }
 
     @Override
-    public void setHooderPositionRotations(Rotation2d newHoodPosition) {
-        kHooder.setState(newHoodPosition.getRadians(), kHooder.getVelocityRadPerSec());
+    public void setHooderPositionRotationsGoal(Rotation2d newHoodPosition) {
+        kHooderPositionRotationsGoal = newHoodPosition.getRadians();
+        hooderPIDController.setGoal(kHooderPositionRotationsGoal);
     }
 
     @Override
@@ -84,7 +104,10 @@ public class ShooterIOSim implements ShooterIO {
     public void updateInputs(ShooterInputs toUpdate) {
         kFlywheel.setInputVoltage((kFlywheel.getInputVoltage() > 0.0) ? 12.0 : 0.0);
         kIndexer.setInputVoltage((kFlywheel.getInputVoltage() > 0.0) ? 12.0 : 0.0);
-        kHooder.setInputVoltage((kFlywheel.getInputVoltage() > 0.0) ? 12.0 : 0.0);
+        kHooder.setInputVoltage(hooderPIDController.calculate(kHooder.getAngleRads(), kHooderPositionRotationsGoal));
+
+        System.out.println(hooderPIDController.calculate(0.01, 100));
+        Logger.recordOutput("Shooter/Hooder/Voltage", hooderPIDController.calculate(kHooder.getAngleRads(), kHooderPositionRotationsGoal));
 
         kFlywheel.update(kLoopPeriodSec);
         kIndexer.update(kLoopPeriodSec);
@@ -109,7 +132,7 @@ public class ShooterIOSim implements ShooterIO {
         toUpdate.hooderOk = true;
         toUpdate.hooderAngleRads = kHooder.getAngleRads();
         toUpdate.hooderVelocityRPM = kHooder.getVelocityRadPerSec() * 60.0 / (2.0 * Math.PI);
-        toUpdate.hooderVoltage = (kHooder.getInput(0) > 0.0) ? 12.0 : 0.0;
+        toUpdate.hooderVoltage = kHooder.getInput(0);
         toUpdate.hooderStatorCurrent = (kHooder.getInput(0) > 0.0) ? kHooder.getCurrentDrawAmps() : 0.0;
         toUpdate.hooderSupplyCurrent = (kHooder.getInput(0) > 0.0) ? kHooder.getCurrentDrawAmps() : 0.0;
     }

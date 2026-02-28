@@ -15,6 +15,12 @@ public class ShooterConstants{
     public int kHoodCancoderId;
     public static double kHooderArmLengthMeters = 0.15d;
     public static Rotation2d kHooderMaxAngleRads = new Rotation2d(Units.degreesToRadians(360.0));
+    public static double kHooderMaxVelocityRadPerS = 10.0d;
+    public static double kHooderMaxAccelerationRadPerS2 = 5.0d;
+
+    public static double kHooderkp;
+    public static double kHooderki;
+    public static double kHooderkd;
 
     //Indexer
     public int kIndexerMotorId;
@@ -23,8 +29,8 @@ public class ShooterConstants{
 
     //NEED TO CALCULATE
     public static final Rotation2d kHoodPosition1 = Rotation2d.fromRotations(0.0); //y value at ??
-    public static final Rotation2d kHoodPosition2 = Rotation2d.fromRotations(0.0); //y value at ??
-    public static final Rotation2d kHoodPosition3 = Rotation2d.fromRotations(0.0); //y value at ??
+    public static final Rotation2d kHoodPosition2 = Rotation2d.fromRotations(1.0); //y value at ??
+    public static final Rotation2d kHoodPosition3 = Rotation2d.fromRotations(2.0); //y value at ??
 
     private ShooterConstants() {
         switch(kTeamNumber) {
@@ -35,6 +41,10 @@ public class ShooterConstants{
                 kHoodMotorId = 2;
                 kHoodCancoderId = 3;
                 kIndexerMotorId = 4;
+
+                kHooderkp = 1;
+                kHooderki = 1;
+                kHooderkd = 1;
                 break;
         }
     }

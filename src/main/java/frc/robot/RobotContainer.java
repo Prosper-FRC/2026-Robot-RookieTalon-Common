@@ -41,22 +41,22 @@ public class RobotContainer {
 
 		
         kDriveController.rightBumper().whileTrue(
-            Commands.run(() -> kShooter.setFlywheelVelocity(3000), kShooter)
+            Commands.run(() -> kShooter.setFlywheelVelocity(3), kShooter)
         ).onFalse(
             Commands.runOnce(kShooter::stopFlywheel, kShooter)
         );
 
         
         kDriveController.a().onTrue(
-            Commands.runOnce(() -> kShooter.setHooderPositionRotations(ShooterConstants.kHoodPosition1), kShooter)
+            Commands.runOnce(() -> kShooter.setHooderPositionRotationsGoal(ShooterConstants.kHoodPosition1), kShooter)
         );
 
         kDriveController.b().onTrue(
-            Commands.runOnce(() -> kShooter.setHooderPositionRotations(ShooterConstants.kHoodPosition2), kShooter)
+            Commands.runOnce(() -> kShooter.setHooderPositionRotationsGoal(ShooterConstants.kHoodPosition2), kShooter)
         );
 
         kDriveController.x().onTrue(
-            Commands.runOnce(() -> kShooter.setHooderPositionRotations(ShooterConstants.kHoodPosition3), kShooter)
+            Commands.runOnce(() -> kShooter.setHooderPositionRotationsGoal(ShooterConstants.kHoodPosition3), kShooter)
         );
      
         kDriveController.start().onTrue(
