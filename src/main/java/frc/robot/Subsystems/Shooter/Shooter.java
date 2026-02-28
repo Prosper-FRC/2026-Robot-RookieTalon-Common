@@ -1,24 +1,26 @@
 package frc.robot.Subsystems.Shooter;
 
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Subsystems.Shooter.ShooterIO.ShooterInputs;
 
 public class Shooter extends SubsystemBase {
     private final ShooterIO kShooter;
-    private final ShooterInputsAutoLogged kShooterInputs;
+    private final ShooterInputs kShooterInputs;
 
     public Shooter(ShooterIO shooterIO) {
         kShooter = shooterIO;
-        kShooterInputs = new ShooterInputsAutoLogged();
+        kShooterInputs = new ShooterInputs();
     }
 
     @Override
     public void periodic() {
         kShooter.updateInputs(kShooterInputs);
 
-        Logger.processInputs("Shooter", kShooterInputs);
+        Logger.processInputs("Shooter", (LoggableInputs) kShooterInputs);
     }
 
     /* FLYWHEEL */
