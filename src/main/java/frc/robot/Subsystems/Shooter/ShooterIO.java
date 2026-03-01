@@ -57,4 +57,10 @@ public interface ShooterIO {
     default public void stopHooder() {}
 
     default public void resetHooder() {}
+
+    default public double getHooderPositionRadiansGoal() {return 0.0;}
+
+    default public void setHooderGains(double p, double i, double d, double s, double g, double v, double a) {}
+
+    default public void setHooderMotionMagicConstraints(double maxVelocity, double maxAcceleration) {}
 }

@@ -10,41 +10,143 @@ public class ShooterConstants{
     //Flywheel
     public int kFlywheelmotorId;
 
-    //Hood
-    public int kHoodMotorId;
-    public int kHoodCancoderId;
-    public static double kHooderArmLengthMeters = 0.15d;
-    public static Rotation2d kHooderMaxAngleRads = new Rotation2d(Units.degreesToRadians(360.0));
-    public static double kHooderMaxVelocityRadPerS = 10.0d;
-    public static double kHooderMaxAccelerationRadPerS2 = 5.0d;
+    public record FlywheelGains(
+        double p, 
+        double i, 
+        double d, 
+        double maxVelocityRadiansPerSecond, 
+        double maxAccelerationRadiansPerSecondSquared, 
+        double s, 
+        double v, 
+        double a, 
+        double g
+    ) {}
 
-    public static double kHooderkp;
-    public static double kHooderki;
-    public static double kHooderkd;
+    public FlywheelGains kFlywheelGains;
 
     //Indexer
     public int kIndexerMotorId;
-    public static double kIndexerMaxVelocityRPM = 10.0d;
-    public static double kIndexerMaxAccelerationRPM = 5.0d;
+    public double kIndexerMaxVelocityRPM = 2500;
+    public double kIndexerMaxAccelerationRPM = 500;
+
+    public record IndexerGains(
+        double p,
+        double i,
+        double d,
+        double maxVelocityRadiansPerSecond, 
+        double maxAccelerationRadiansPerSecondSquared, 
+        double s, 
+        double v, 
+        double a
+    ) {}
+
+    public IndexerGains kIndexerGains;
+
+    //Hood
+    public int kHoodMotorId;
+    public int kHoodCancoderId;
+    public double kHooderArmLengthMeters = 0.15;
+    public Rotation2d kHooderMaxAngleRads = new Rotation2d(Units.degreesToRadians(360.0));
+
+    public record HooderGains(
+        double p, 
+        double i, 
+        double d, 
+        double maxVelocityRadiansPerSecond, 
+        double maxAccelerationRadiansPerSecondSquared, 
+        double s, 
+        double v, 
+        double a, 
+        double g
+    ) {}
+
+    public HooderGains kHooderGains;
 
     //NEED TO CALCULATE
-    public static final Rotation2d kHoodPosition1 = Rotation2d.fromRotations(0.0); //y value at ??
-    public static final Rotation2d kHoodPosition2 = Rotation2d.fromRotations(1.0); //y value at ??
-    public static final Rotation2d kHoodPosition3 = Rotation2d.fromRotations(2.0); //y value at ??
+    public final double kFlywheelVelocityTolerance = 10.0;
+    public final double kFlywheelVelocityOnRadiansPerSec = Units.rotationsPerMinuteToRadiansPerSecond(2000);
+    public final double kFlywheelVelocityOffRadiansPerSec = 0;
+
+    public final double kIndexerVelocityOnRadiansPerSec = Units.rotationsPerMinuteToRadiansPerSecond(800);
+    public final double kIndexerVelocityOffRadiansPerSec = 0;
+
+    public final Rotation2d kHoodPosition1 = Rotation2d.fromDegrees(0.0);
+    public final Rotation2d kHoodPosition2 = Rotation2d.fromDegrees(30.0);
+    public final Rotation2d kHoodPosition3 = Rotation2d.fromDegrees(60.0);
 
     private ShooterConstants() {
         switch(kTeamNumber) {
             case 9999:
-                //motors for bot
+                kFlywheelGains = new FlywheelGains(
+                    0.0,
+                    0.0,
+                    0.0,
+                    Units.rotationsToRadians(2),
+                    Units.rotationsToRadians(5),
+                    0.0,
+                    1.0,
+                    1.0,
+                    0.0
+                );
+                kIndexerGains = new IndexerGains(
+                    0.0,
+                    0.0,
+                    0.0,
+                    Units.rotationsPerMinuteToRadiansPerSecond(5),
+                    Units.rotationsPerMinuteToRadiansPerSecond(1),
+                    0.0,
+                    0.02,
+                    0.01
+                );
+                kHooderGains = new HooderGains(
+                    0.0,
+                    0.0,
+                    0.0,
+                    Units.rotationsToRadians(1),
+                    Units.rotationsToRadians(3),
+                    0.0,
+                    5.0,
+                    1.0,
+                    0.0
+                );
             case 0:
                 kFlywheelmotorId = 1;
                 kHoodMotorId = 2;
                 kHoodCancoderId = 3;
                 kIndexerMotorId = 4;
 
-                kHooderkp = 1;
-                kHooderki = 1;
-                kHooderkd = 1;
+                kFlywheelGains = new FlywheelGains(
+                    2.0,
+                    0.0,
+                    0.0,
+                    Units.rotationsPerMinuteToRadiansPerSecond(2500),
+                    Units.rotationsPerMinuteToRadiansPerSecond(2000),
+                    0.0,
+                    0.02,
+                    0.01,
+                    0.0
+                );
+                kIndexerGains = new IndexerGains(
+                    2.0,
+                    0.0,
+                    0.0,
+                    Units.rotationsPerMinuteToRadiansPerSecond(2500),
+                    Units.rotationsPerMinuteToRadiansPerSecond(2000),
+                    0.0,
+                    0.02,
+                    0.01
+                );
+                kHooderGains = new HooderGains(
+                    2.0,
+                    0.1,
+                    0.1,
+                    Units.rotationsToRadians(1),
+                    Units.rotationsToRadians(3),
+                    0.0,
+                    1.0,
+                    1.0,
+                    0.1
+                );
                 break;
         }
     }

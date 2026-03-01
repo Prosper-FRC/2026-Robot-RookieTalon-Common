@@ -24,7 +24,11 @@ public class RobotContainer {
             case REPLAY:
                 break;
             case SIM:
-                kShooter = new Shooter(new ShooterIOSim());
+                kShooter = new Shooter(new ShooterIOSim(
+                    ShooterConstants.getInstance().kFlywheelGains,
+                    ShooterConstants.getInstance().kIndexerGains,
+                    ShooterConstants.getInstance().kHooderGains
+                ));
                 break;
             default:
                 break;
@@ -34,29 +38,22 @@ public class RobotContainer {
   	}
 
 	private void configureBindings() {
-
         DriverStation.silenceJoystickConnectionWarning(true);
-
-        //bind one button for shooting, one button for hood position
-
 		
-        kDriveController.rightBumper().whileTrue(
-            Commands.run(() -> kShooter.setFlywheelVelocity(3), kShooter)
-        ).onFalse(
-            Commands.runOnce(kShooter::stopFlywheel, kShooter)
+        // Hooder
+        kDriveController.rightBumper().onTrue(
+            Commands.runOnce(() -> kShooter.nextPosition(), kShooter)
         );
 
-        
+        kDriveController.leftBumper().onTrue(
+            Commands.runOnce(() -> kShooter.previousPosition(), kShooter)
+        );
+    
+        // Flywheel and Indexer
         kDriveController.a().onTrue(
-            Commands.runOnce(() -> kShooter.setHooderPositionRotationsGoal(ShooterConstants.kHoodPosition1), kShooter)
-        );
-
-        kDriveController.b().onTrue(
-            Commands.runOnce(() -> kShooter.setHooderPositionRotationsGoal(ShooterConstants.kHoodPosition2), kShooter)
-        );
-
-        kDriveController.x().onTrue(
-            Commands.runOnce(() -> kShooter.setHooderPositionRotationsGoal(ShooterConstants.kHoodPosition3), kShooter)
+            Commands.runOnce(() -> kShooter.shooterOnOff(), kShooter)
+        ).onTrue(
+            Commands.run(() -> kShooter.checkFlywheelReady(), kShooter)
         );
      
         kDriveController.start().onTrue(
