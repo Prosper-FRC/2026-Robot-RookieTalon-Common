@@ -1,4 +1,4 @@
-package frc.robot.Subsystems.Intake;
+package frc.robot.SubSystems.Intake;
 
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;

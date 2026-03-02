@@ -1,15 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
-
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
- */
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -18,20 +7,22 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-import frc.robot.Subsystems.Intake.*;
+import frc.robot.SubSystems.Intake.*;
 
 public class RobotContainer {
 
-
+  /* ================= CONTROLLER ================= */
 
   private final CommandXboxController driver =
       new CommandXboxController(0);
 
+  /* ================= SUBSYSTEMS ================= */
 
   private final Intake intake;
 
   public RobotContainer() {
 
+    /* ----------- IO SELECTION (REAL vs SIM) ----------- */
 
     IntakeIO rollerIO;
     PivotIO pivotIO;
@@ -49,9 +40,11 @@ public class RobotContainer {
     configureBindings();
   }
 
-
+  /* ================= BUTTON BINDINGS ================= */
 
   private void configureBindings() {
+
+    /* ---------- ROLLER ---------- */
 
     // Right trigger = intake
     driver.rightTrigger()
@@ -93,7 +86,7 @@ public class RobotContainer {
                     IntakeConstants.kMaxPivotPosition),
                 intake));
 
-
+    /* ---------- MANUAL PIVOT CONTROL ---------- */
 
     // Left joystick Y for manual voltage control
     intake.setDefaultCommand(
@@ -110,11 +103,14 @@ public class RobotContainer {
         }, intake));
   }
 
+  /* ================= OPTIONAL HELPER ================= */
 
   private double intakePivotAngleDegrees() {
     // Safe placeholder if you want manual adjustments
     return 0;
   }
+
+  /* ================= AUTONOMOUS ================= */
 
   public Command getAutonomousCommand() {
 

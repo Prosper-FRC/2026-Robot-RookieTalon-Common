@@ -1,4 +1,4 @@
-package frc.robot.Subsystems.Intake;
+package frc.robot.SubSystems.Intake;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -6,7 +6,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Subsystems.Intake.IntakeConstants;
+import frc.robot.SubSystems.Intake.IntakeConstants;
 
 public class PivotIOSim implements PivotIO {
 
@@ -33,8 +33,8 @@ public class PivotIOSim implements PivotIO {
     sim = new SingleJointedArmSim(
         edu.wpi.first.math.system.plant.DCMotor.getKrakenX60(1),
         IntakeConstants.kPivotGearing,
-        0.02, // moment of inertia
-        0.4,  // arm length meters
+        0.02, // moment of inertia (tune if needed)
+        0.4,  // arm length meters (CHANGE to match CAD)
         IntakeConstants.kMinPivotPosition.getRadians(),
         IntakeConstants.kMaxPivotPosition.getRadians(),
         true,
@@ -47,7 +47,7 @@ public class PivotIOSim implements PivotIO {
   @Override
   public void updateInputs(PivotIOInputs inputs) {
 
-    sim.update(0.02);
+    sim.update(0.02); // 20ms loop
 
     inputs.position =
         Rotation2d.fromRadians(sim.getAngleRads());

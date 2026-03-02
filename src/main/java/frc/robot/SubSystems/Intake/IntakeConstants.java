@@ -1,4 +1,4 @@
-package frc.robot.Subsystems.Intake;
+package frc.robot.SubSystems.Intake;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
